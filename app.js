@@ -9,6 +9,8 @@ var cors = require('cors');
 var index = require('./routes/index');
 var users = require('./routes/users');
 var events = require('./routes/events');
+var clubs = require('./routes/clubs');
+
 var chats = require('./routes/chats');
 var Chat = require('./models/Chat.js');
 var Message = require('./models/Message.js');
@@ -41,6 +43,7 @@ var user={ _id:1, firstName:'Sherali', lastName:'Obidov'};
 app.use('/', index);
 app.use('/users', users);
 app.use('/events', events);
+app.use('/clubs', clubs);
 
 io.on('connect', function (socket) {
   console.log('User connected');
@@ -87,9 +90,9 @@ app.get('/chat/messages/:id', function(req, res, next) {
   console.log(req.params.id +' => getMessages of userId ');
   var q = Message.find({fromId:user._id, toId:req.params.id}).sort({createdDate:1}).limit(20);
   q.exec(function(err, msgs){
-    res.send(msgs);  
+    res.send(msgs);
   });
-  
+
 });
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -108,6 +111,5 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
 
 module.exports = app;

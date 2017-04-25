@@ -15,21 +15,30 @@ router.get('/', function(req, res, next) {
               console.log('Error fetching data from mongodb');
               res.send(err)
             }
-        //   db.close();   
-          //console.log(doc);   
-          res.json(doc);      
+          res.json(doc);
+      });
+});
+
+router.get('/:id', function(req, res, next) {
+      console.log('Event request for : ' + req.params.id);
+      db.collection('events').findOne({"_id":  ObjectId(req.params.id) },function(err, doc){
+          if(err) {
+              console.log('Error fetching data from mongodb');
+              res.send(err)
+            }
+          res.json(doc);
       });
 });
 
 router.post('/addevent', (req, res) => {
-  db.collection('events').save(req.body, (err, result) => {
+    db.collection('events').save(req.body, (err, result) => {
     if (err) {
-         console.log(err);
-         res.send(err);
+        console.log(err);
+        res.send(err);
     }
     console.log('saved to database')
-    res.send(result);
-  })
+res.send(result.ops);
+})
 })
 
 module.exports = router;
