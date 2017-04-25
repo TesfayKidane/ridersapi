@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var MongoClient = require('mongodb').MongoClient;
+var ObjectId = require('mongodb').ObjectID;
 
 var db
 
@@ -15,9 +16,18 @@ router.get('/', function(req, res, next) {
               console.log('Error fetching data from mongodb');
               res.send(err)
             }
-        //   db.close();   
-          console.log(doc);   
-          res.json(JSON.stringify(doc));      
+          res.json(doc);      
+      });
+});
+
+router.get('/:id', function(req, res, next) { 
+      console.log('Event request for : ' + req.params.id);
+      db.collection('events').findOne({"_id":  ObjectId(req.params.id) },function(err, doc){
+          if(err) {
+              console.log('Error fetching data from mongodb');
+              res.send(err)
+            }
+          res.json(doc);      
       });
 });
 
@@ -28,7 +38,7 @@ router.post('/addevent', (req, res) => {
          res.send(err);
     }
     console.log('saved to database')
-    res.send(result);
+    res.send(result.ops);
   })
 })
 
