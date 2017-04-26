@@ -10,11 +10,26 @@ var index = require('./routes/index');
 var users = require('./routes/users');
 var events = require('./routes/events');
 var clubs = require('./routes/clubs');
+var jwt = require('express-jwt');
+var jwks = require('jwks-rsa');
 
 var chats = require('./routes/chats');
 var Chat = require('./models/Chat.js');
 var Message = require('./models/Message.js');
 var app = express();
+var jwtCheck = jwt({
+    secret: jwks.expressJwtSecret({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        jwksUri: "https://bikeriders.auth0.com/.well-known/jwks.json"
+    }),
+    audience: 'http://localhost:9000',
+    issuer: "https://bikeriders.auth0.com/",
+    algorithms: ['RS256']
+});
+
+app.use(jwtCheck);
 
 var server = app.listen(9000, ()=>console.log("running on port 9000"));
 
@@ -33,6 +48,7 @@ app.use(lessMiddleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 var io = require('socket.io').listen(server);
 
+app.all(cors());
 app.options('*', cors({'credentials':true, 'origin':true}));
 /*
 app.all('/events/*', function(req, res, next) {
