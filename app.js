@@ -67,6 +67,7 @@ io.on('connect', function (socket) {
   });
 });
 
+
 app.post('/chat', function(req, res, next) {
   req.body.fromId=user._id;
   console.log(req.body);
