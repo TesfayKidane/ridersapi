@@ -37,7 +37,7 @@ router.post('/addevent', (req, res) => {
          console.log(err);
          res.send(err);
     }
-    console.log('saved to database')
+    console.log('event saved to database')
     res.send(result.ops);
   })
 })
