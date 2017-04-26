@@ -50,31 +50,21 @@ router.get('/', function(req, res, next) {
     
     
 router.post('/addclub', (req, res) => {
-
-var address = req.body.clubPostCode;
-    geocoder.geocode( { 'address': address}, function(results, status) {
-      if (status == 'OK') {
-        var lat = results[0].geometry.location.lat();
-        var lng = results[0].geometry.location.lng();
-        var obj = {type: "Point", coordinates: [lat, lng]};
-        req.body.loc = obj;
+        delete req.body["clubLat"];
+        delete req.body["clubLng"];
         console.log(req.body);
         db.collection('clubs').save(req.body, (err, result) => {
           if (err) {
               console.log(err);
               res.send(err);
-          }
+          }else{
           console.log('saved to database');
           res.send(result.ops);
+          }
         })
-        
-      }
-    });
-
-  
 })
 
-router.get('/:id', function(req, res, next) { 
+router.get('/byId/:id', function(req, res, next) { 
       console.log('Club request for : ' + req.params.id);
       db.collection('clubs').findOne({"_id":  ObjectId(req.params.id) },function(err, doc){
           if(err) {

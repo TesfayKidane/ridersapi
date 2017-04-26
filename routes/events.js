@@ -20,7 +20,7 @@ router.get('/', function(req, res, next) {
       });
 });
 
-router.get('/:id', function(req, res, next) { 
+router.get('/byId/:id', function(req, res, next) { 
       console.log('Event request for : ' + req.params.id);
       db.collection('events').findOne({"_id":  ObjectId(req.params.id) },function(err, doc){
           if(err) {
@@ -33,15 +33,15 @@ router.get('/:id', function(req, res, next) {
 
 router.post('/addevent', (req, res) => {
     console.log(req.body);
-    var clubId = req.body.clubId;
-    delete req.body["clubId"];
+var clubId = req.body.clubId;
+delete req.body["clubId"];
 db.collection('events').save(req.body, (err, result) => {
     if (err) {
         console.log(err);
         res.send(err);
     }
     var announceId = result.ops[0]._id.toString();
-        db.collection("clubs").update(
+db.collection("clubs").update(
     {"_id":  ObjectId(clubId) },  {$push: {eventIds: {eventId:announceId} }}, (e, r) => {
     if(e){
         console.log(e);
@@ -54,7 +54,7 @@ res.send(result.ops);
 })
 
 router.get('/byClub/:id', function(req, res, next) {
-    var club;
+    let club;
     db.collection('clubs').findOne({"_id":  ObjectId(req.params.id) },function(err, doc){
         if(err) {
             console.log('Error fetching data from mongodb');

@@ -34,7 +34,7 @@ app.use(lessMiddleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 var io = require('socket.io').listen(server);
 
-app.options('*', cors({'credentials':true, 'origin':true}));
+//app.options('*', cors({'credentials':true, 'origin':true}));
 /*
 app.all('/events/*', function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
