@@ -19,10 +19,9 @@ router.post('/adduser', (req, res) => {
     if (err) {
          console.log(err);
          res.send(err);
-    }
-    else{
-    console.log('user saved to database')
-    res.send(result);
+    } else{
+        console.log('user saved to database')
+        res.send(result);
     }
   })
 })
