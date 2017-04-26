@@ -34,7 +34,6 @@ app.use(cookieParser());
 app.use(lessMiddleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-
 var user={ _id:1, firstName:'Sherali', lastName:'Obidov'};
 
 app.use('/', index);
@@ -110,4 +109,5 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+app.listen(9000, ()=>console.log("running on port 9000"));
 module.exports = app;
