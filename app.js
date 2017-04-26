@@ -10,17 +10,31 @@ var index = require('./routes/index');
 var users = require('./routes/users');
 var events = require('./routes/events');
 var clubs = require('./routes/clubs');
+var jwt = require('express-jwt');
+var jwks = require('jwks-rsa');
 
 var chats = require('./routes/chats');
 var Chat = require('./models/Chat.js');
 var Message = require('./models/Message.js');
 var app = express();
+var jwtCheck = jwt({
+    secret: jwks.expressJwtSecret({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        jwksUri: "https://bikeriders.auth0.com/.well-known/jwks.json"
+    }),
+    audience: 'http://localhost:9000',
+    issuer: "https://bikeriders.auth0.com/",
+    algorithms: ['RS256']
+});
+
+app.use(jwtCheck);
 
 var server = app.listen(9000, ()=>console.log("running on port 9000"));
 var io = require('socket.io').listen(server);
 
 app.use(cors({credentials:true,  origin: true}));
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -34,14 +48,15 @@ app.use(cookieParser());
 app.use(lessMiddleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-/*
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-})
-*/
 
+app.all(cors());
+app.options('*', cors({'credentials':true, 'origin':true}));
+/*
+app.all('/events/*', function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  next(req, res, next);
+ });*/
 var user={ _id:1, firstName:'Sherali', lastName:'Obidov'};
 
 app.use('/', index);
@@ -118,5 +133,4 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-app.listen(9000, ()=>console.log("running on port 9000"));
 module.exports = app;
