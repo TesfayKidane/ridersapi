@@ -10,6 +10,7 @@ var lessMiddleware = require('less-middleware');
 var index = require('./routes/index');
 var users = require('./routes/users');
 var events = require('./routes/events');
+var clubs = require('./routes/clubs');
 
 var app = express();
 
@@ -37,6 +38,7 @@ app.options('*', cors({'credentials':true, 'origin':true}));
 app.use('/', index);
 app.use('/users', users);
 app.use('/events', events);
+app.use('/clubs', clubs);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
