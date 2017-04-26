@@ -3,19 +3,6 @@ var router = express.Router();
 var MongoClient = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectID;
 
-var NodeGeocoder = require('node-geocoder');
-
-var options = {
-  provider: 'google',
-
-  // Optional depending on the providers
-  httpAdapter: 'https', // Default
-  apiKey: 'AIzaSyAQWOM1SESY4y3lMmhAUo-4LiFbNj_hqSM', // for Mapquest, OpenCage, Google Premier
-  formatter: null         // 'gpx', 'string', ...
-};
-
-var geocoder = NodeGeocoder(options);
-
 var db
 
 MongoClient.connect('mongodb://rider:rider2017@ds145208.mlab.com:45208/ridersdb', function(err, database){
@@ -33,26 +20,11 @@ router.get('/', function(req, res, next) {
           console.log(doc);   
           res.json(doc);      
       });
-
-      // db.collection('clubs').aggregate(
-
-      //     [{$project:{clubName:1, clubState:1, clubPostCode:1, clubImage:1, totalUsers:{$size:"$userIds"}}},  
-
-      //     ]).toArray(function(err, doc){
-      //     if(err) {
-      //         console.log('Error fetching data from mongodb');
-      //         res.json(err)
-      //       }
-      //     console.log(doc);   
-      //     res.json(doc);      
-      // });
 });
-    
-    
+
 router.post('/addclub', (req, res) => {
         delete req.body["clubLat"];
         delete req.body["clubLng"];
-        console.log(req.body);
         db.collection('clubs').save(req.body, (err, result) => {
           if (err) {
               console.log(err);
@@ -64,7 +36,7 @@ router.post('/addclub', (req, res) => {
         })
 })
 
-router.get('/byId/:id', function(req, res, next) { 
+router.get('/byId/:id', function(req, res, next) {
       console.log('Club request for : ' + req.params.id);
       db.collection('clubs').findOne({"_id":  ObjectId(req.params.id) },function(err, doc){
           if(err) {
@@ -74,15 +46,5 @@ router.get('/byId/:id', function(req, res, next) {
           res.json(doc);      
       });
 });
-
-// router.get('/:id', function(req, res, next) {
-//       db.collection('clubs').findOne({"_id":  ObjectId(req.params.id) },function(err, doc){
-//           if(err) {
-//               console.log('Error fetching data from mongodb');
-//               res.send(err)
-//             }
-//           res.json(doc);      
-//       });
-// });
 
 module.exports = router;

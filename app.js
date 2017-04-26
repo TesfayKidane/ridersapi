@@ -11,13 +11,29 @@ var users = require('./routes/users');
 var events = require('./routes/events');
 var clubs = require('./routes/clubs');
 var announce = require('./routes/announce');
+var jwt = require('express-jwt');
+var jwks = require('jwks-rsa');
 
 var chats = require('./routes/chats');
 var Chat = require('./models/Chat.js');
 var Message = require('./models/Message.js');
 var app = express();
+var jwtCheck = jwt({
+    secret: jwks.expressJwtSecret({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        jwksUri: "https://bikeriders.auth0.com/.well-known/jwks.json"
+    }),
+    audience: 'http://localhost:9000',
+    issuer: "https://bikeriders.auth0.com/",
+    algorithms: ['RS256']
+});
+
+app.use(jwtCheck);
 
 var server = app.listen(9000, ()=>console.log("running on port 9000"));
+var io = require('socket.io').listen(server);
 
 app.use(cors({credentials:true,  origin: true}));
 // view engine setup
@@ -32,9 +48,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(lessMiddleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
-var io = require('socket.io').listen(server);
 
-//app.options('*', cors({'credentials':true, 'origin':true}));
+
+
+app.all(cors());
+app.options('*', cors({'credentials':true, 'origin':true}));
 /*
 app.all('/events/*', function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -77,7 +95,6 @@ app.post('/chat', function(req, res, next) {
 });
 
 app.get('/chat/users', function(req, res, next) {
-  console.log(1);
   var users=[
     {_id:2, firstName:'Tesfay', lastName:'Aregay'},
     {_id:3, firstName:'Miga', lastName:'Ochirgiev'},
