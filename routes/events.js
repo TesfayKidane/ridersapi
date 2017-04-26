@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var MongoClient = require('mongodb').MongoClient;
+var ObjectId = require('mongodb').ObjectID;
 
 var db
 
@@ -15,30 +16,30 @@ router.get('/', function(req, res, next) {
               console.log('Error fetching data from mongodb');
               res.send(err)
             }
-          res.json(doc);
+          res.json(doc);      
       });
 });
 
-router.get('/:id', function(req, res, next) {
+router.get('/:id', function(req, res, next) { 
       console.log('Event request for : ' + req.params.id);
       db.collection('events').findOne({"_id":  ObjectId(req.params.id) },function(err, doc){
           if(err) {
               console.log('Error fetching data from mongodb');
               res.send(err)
             }
-          res.json(doc);
+          res.json(doc);      
       });
 });
 
 router.post('/addevent', (req, res) => {
-    db.collection('events').save(req.body, (err, result) => {
+  db.collection('events').save(req.body, (err, result) => {
     if (err) {
-        console.log(err);
-        res.send(err);
+         console.log(err);
+         res.send(err);
     }
-    console.log('saved to database')
-res.send(result.ops);
-})
+    console.log('event saved to database')
+    res.send(result.ops);
+  })
 })
 
 module.exports = router;

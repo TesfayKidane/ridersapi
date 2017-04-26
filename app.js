@@ -33,12 +33,14 @@ app.use(lessMiddleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 var io = require('socket.io').listen(server);
 
-var user={ _id:1, firstName:'Sherali', lastName:'Obidov'};
-/*app.all('/events/*', function(req, res, next) {
+app.options('*', cors({'credentials':true, 'origin':true}));
+/*
+app.all('/events/*', function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
   next(req, res, next);
  });*/
+var user={ _id:1, firstName:'Sherali', lastName:'Obidov'};
 
 app.use('/', index);
 app.use('/users', users);
