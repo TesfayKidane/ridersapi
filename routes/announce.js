@@ -10,39 +10,18 @@ MongoClient.connect('mongodb://rider:rider2017@ds145208.mlab.com:45208/ridersdb'
   db = database  
 })
 
-router.get('/', function(req, res, next) {
-      db.collection('events').find().toArray(function(err, doc){
-          if(err) {
-              console.log('Error fetching data from mongodb');
-              res.send(err)
-            }
-          res.json(doc);      
-      });
-});
-
-router.get('/:id', function(req, res, next) { 
-      console.log('Event request for : ' + req.params.id);
-      db.collection('events').findOne({"_id":  ObjectId(req.params.id) },function(err, doc){
-          if(err) {
-              console.log('Error fetching data from mongodb');
-              res.send(err)
-            }
-          res.json(doc);      
-      });
-});
-
-router.post('/addevent', (req, res) => {
+router.post('/addannounce', (req, res) => {
     console.log(req.body);
     var clubId = req.body.clubId;
     delete req.body["clubId"];
-  db.collection('events').save(req.body, (err, result) => {
+  db.collection('announcement').save(req.body, (err, result) => {
     if (err) {
          console.log(err);
          res.send(err);
     }
     var announceId = result.ops[0]._id.toString();
     db.collection("clubs").update(
-        {"_id":  ObjectId(clubId) },  {$push: {eventIds: {eventId:announceId} }}, (e, r) => {
+        {"_id":  ObjectId(clubId) },  {$push: {announcementIds: {announcementId:announceId} }}, (e, r) => {
             if(e){
                 console.log(e);
                 res.send(e);
@@ -61,13 +40,13 @@ router.get('/byClub/:id', function(req, res, next) {
               res.send(err)
             }
             var arr =[];
-            for( var i in doc.eventIds ) {
-                if (doc.eventIds.hasOwnProperty(i)){
-                  arr.push(ObjectId(doc.eventIds[i].eventId));
+            for( var i in doc.announcementIds ) {
+                if (doc.announcementIds.hasOwnProperty(i)){
+                  arr.push(ObjectId(doc.announcementIds[i].announcementId));
                 }
             }
             
-            db.collection('events').find({_id: {$in: arr}}).toArray(function(err, doc){
+            db.collection('announcement').find({_id: {$in: arr}}).toArray(function(err, doc){
                 if(err) {
                     res.send(err)
                   }
