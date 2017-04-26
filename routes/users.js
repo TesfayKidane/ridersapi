@@ -1,10 +1,9 @@
 var express = require('express');
-var cu = require('./currentuser');
 var router = express.Router();
 var MongoClient = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectID;
 
-var db;
+var db
 
 MongoClient.connect('mongodb://rider:rider2017@ds145208.mlab.com:45208/ridersdb', function(err, database){
   if (err) return console.log(err)
@@ -12,7 +11,6 @@ MongoClient.connect('mongodb://rider:rider2017@ds145208.mlab.com:45208/ridersdb'
 })
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-
   res.send('respond with a resource');
 });
 
@@ -25,9 +23,8 @@ router.post('/adduser', (req, res) => {
     else{
       console.log('user saved to database')
       res.send(result);
-      cu(db, req.headers);
     }
-  });
+  })
 })
 
 module.exports = router;

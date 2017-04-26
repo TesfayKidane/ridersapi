@@ -32,6 +32,7 @@ var jwtCheck = jwt({
 app.use(jwtCheck);
 
 var server = app.listen(9000, ()=>console.log("running on port 9000"));
+var io = require('socket.io').listen(server);
 
 app.use(cors({credentials:true,  origin: true}));
 // view engine setup
@@ -46,7 +47,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(lessMiddleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
-var io = require('socket.io').listen(server);
+
 
 app.all(cors());
 app.options('*', cors({'credentials':true, 'origin':true}));
@@ -92,6 +93,7 @@ app.post('/chat', function(req, res, next) {
 
 app.get('/chat/users', function(req, res, next) {
   console.log(1);
+  console.log(req.body);
   var users=[
     {_id:2, firstName:'Tesfay', lastName:'Aregay'},
     {_id:3, firstName:'Miga', lastName:'Ochirgiev'},
