@@ -10,6 +10,7 @@ var index = require('./routes/index');
 var users = require('./routes/users');
 var events = require('./routes/events');
 var clubs = require('./routes/clubs');
+var announce = require('./routes/announce');
 var jwt = require('express-jwt');
 var jwks = require('jwks-rsa');
 
@@ -49,6 +50,7 @@ app.use(lessMiddleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 
+
 app.all(cors());
 app.options('*', cors({'credentials':true, 'origin':true}));
 /*
@@ -63,6 +65,7 @@ app.use('/', index);
 app.use('/users', users);
 app.use('/events', events);
 app.use('/clubs', clubs);
+app.use('/announce', announce);
 
 io.on('connect', function (socket) {
   console.log('User connected');
@@ -92,8 +95,6 @@ app.post('/chat', function(req, res, next) {
 });
 
 app.get('/chat/users', function(req, res, next) {
-  console.log(1);
-  console.log(req.body);
   var users=[
     {_id:2, firstName:'Tesfay', lastName:'Aregay'},
     {_id:3, firstName:'Miga', lastName:'Ochirgiev'},
