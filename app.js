@@ -11,8 +11,23 @@ var index = require('./routes/index');
 var users = require('./routes/users');
 var events = require('./routes/events');
 var clubs = require('./routes/clubs');
+var jwt = require('express-jwt');
+var jwks = require('jwks-rsa');
 
 var app = express();
+var jwtCheck = jwt({
+    secret: jwks.expressJwtSecret({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        jwksUri: "https://bikeriders.auth0.com/.well-known/jwks.json"
+    }),
+    audience: 'http://localhost:9000',
+    issuer: "https://bikeriders.auth0.com/",
+    algorithms: ['RS256']
+});
+
+app.use(jwtCheck);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -27,6 +42,7 @@ app.use(cookieParser());
 app.use(lessMiddleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.all(cors());
 app.options('*', cors({'credentials':true, 'origin':true}));
 
  app.use(function(req, res, next) {
