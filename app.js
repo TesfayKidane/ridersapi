@@ -8,6 +8,7 @@ var lessMiddleware = require('less-middleware');
 var cors = require('cors');
 var index = require('./routes/index');
 var users = require('./routes/users');
+var currentUser = require('./routes/currentuser');
 var events = require('./routes/events');
 var clubs = require('./routes/clubs');
 var jwt = require('express-jwt');
@@ -17,6 +18,7 @@ var chats = require('./routes/chats');
 var Chat = require('./models/Chat.js');
 var Message = require('./models/Message.js');
 var app = express();
+var MongoClient = require('mongodb').MongoClient;
 var jwtCheck = jwt({
     secret: jwks.expressJwtSecret({
         cache: true,
@@ -57,62 +59,110 @@ app.all('/events/*', function(req, res, next) {
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
   next(req, res, next);
  });*/
-var user={ _id:1, firstName:'Sherali', lastName:'Obidov'};
 
 app.use('/', index);
 app.use('/users', users);
 app.use('/events', events);
 app.use('/clubs', clubs);
+clients = {};
+userObjects = {};
+app.set('users', {});
+app.set('userObjects', {});
 
 io.on('connect', function (socket) {
-  console.log('User connected');
-  socket.on('disconnect', function() {
-    console.log('User disconnected');
-  });
-  socket.on('save-message', function (data) {
-    console.log(data);
-    data.fromId=user._id;
-    io.emit('new-message', { message: data });
-  });
+    console.log('User connected');
+    socket.auth = false;
+    socket.on('authenticate', function(data){
+        //check the auth data sent by the client
+        console.log(data);
+        currentUser(data).then(function(success){
+            if (success){
+                console.log("Authenticated socket ", socket.id);
+                socket.auth = true;
+                /*app.get('users')[success._id] = socket.id;
+                app.get('userObjects')[socket.id]=success;*/
+                clients[success._id]=socket.id;
+                userObjects[socket.id]=success;
+            }
+        }).catch(function (e) {
+            console.log(e);
+        });
+    });
+    setTimeout(function(){
+        //If the socket didn't authenticate, disconnect it
+        if (!socket.auth) {
+            console.log("Disconnecting socket ", socket.id);
+            socket.disconnect('unauthorized');
+            /*app.get('users')[socket.id] = null;
+            app.get('userObjects')[socket.id] = null;*/
+            userObjects[socket.id] = null;
+        }
+    }, 2000);
 
-  socket.on('iamtyping', function (data) {
-    console.log(data + ' ' + 'typing');
-    data.hash= user._id + '#' + data.toId;
-    io.emit('heistyping', { message: data });
-  });
+    socket.on('disconnect', function() {
+        console.log('User disconnected');
+        userObjects[socket.id] = null;
+    });
+
+    socket.on('save-message', function (data) {
+        console.log(data);
+        //data.fromId=app.get('userObjects')[socket.id]._id;
+        data.fromId=userObjects[socket.id]._id;
+        //io.to(app.get('users')[data.toId]).emit('new-message', { message: data });
+        io.to(clients[data.toId]).emit('new-message', { message: data });
+    });
+
+    socket.on('iamtyping', function (data) {
+        console.log('typing... to ' +data.toId);
+        console.log(clients);
+        /*console.log(app.get('userObjects'));
+        console.log(socket.id);*/
+        //data.hash= app.get('userObjects')[socket.id]._id;
+        data.hash= userObjects[socket.id]._id;
+        //io.to(app.get('users')[data.toId]).emit('heistyping', { message: data });
+        io.to(clients[data.toId]).emit('heistyping', { message: data });
+    });
 });
 
-
 app.post('/chat', function(req, res, next) {
-  req.body.fromId=user._id;
-  console.log(req.body);
-  Message.create(req.body, function (err, post) {
-    if (err) return next(err);
-    res.json(post);
-  });
+  currentUser(req).then(function (user) {
+    console.log('post request');
+    console.log(user._id + " current userid");
+    req.body.fromId=user._id;
+    //console.log(app.get('users')[req.body.toId] + ' socket_id to send');
+    //console.log(app.get('users')[req.body.fromId] + ' socket_id from user');
+
+    //io.to(app.get('users')[req.body.toId]).emit('new-message', req.body);
+    io.to(clients[req.body.toId]).emit('new-message', req.body);
+    Message.create(req.body, function (err, post) {
+          if (err) return next(err);
+          res.json(post);
+      });
+  }).catch(function (e) {
+      console.log(e);
+  })
 });
 
 app.get('/chat/users', function(req, res, next) {
-  console.log(1);
   console.log(req.body);
-  var users=[
-    {_id:2, firstName:'Tesfay', lastName:'Aregay'},
-    {_id:3, firstName:'Miga', lastName:'Ochirgiev'},
-    {_id:4, firstName:'Sonam', lastName:'Buldi'},
-    {_id:5, firstName:'James', lastName:'Ketdi'}
-  ]
-  users.push(user);
-  console.log(users);
-
-  res.json(users);
+   MongoClient.connect('mongodb://rider:rider2017@ds145208.mlab.com:45208/ridersdb', function(err, db){
+        if (err) return console.log(err);
+        db.collection('users').find({}).toArray(function(err, users){
+            console.log(users);
+            res.json(users);
+        });
+    });
 });
 
 app.get('/chat/messages/:id', function(req, res, next) {
   console.log(req.params.id +' => getMessages of userId ');
-  var q = Message.find({fromId:user._id, toId:req.params.id}).sort({createdDate:1}).limit(20);
-  q.exec(function(err, msgs){
-    res.send(msgs);
-  });
+  currentUser(req).then(function (user) {
+      var q = Message.find({$or:[{fromId:user._id, toId:req.params.id}, {fromId:req.params.id, toId:user._id}]}).sort({createdDate:1}).limit(20);
+      q.exec(function(err, msgs){
+          res.send(msgs);
+      });
+  })
+
 
 });
 // catch 404 and forward to error handler

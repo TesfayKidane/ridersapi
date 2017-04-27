@@ -49,23 +49,10 @@ geocoder.geocode({address: req.body.clubPostCode}, function(err, ans) {
     console.log('saved to database');
     res.send(result);
   })
-
 });
-  
 })
-//"{"_id":"590021dcdbe09c30137cd9ea","clubName":"test last","clubCity":"sasas",
-//"clubState":"Alaska","clubPostCode":52557,"clubImage":"","clubOwnerId":1,
-//"loc":{"type":"Point","coordinates":{"lat":41.0182103,"lng":-91.97041689999999}}}"
-router.get('/getnearby', function(req, res, next){
 
-  /*db.collection('clubs').ensureIndex({"loc": "2dsphere"}, {name: "index2dSphereLocation1"}, function(error, indexName){
-    if(error)console.log(error + " index error");
-    console.log(indexName);
-  });
-  db.collection('clubs').ensureIndex({"loc": "2d"}, {name: "index2dLocation1"}, function(error, indexName){
-    if(error)console.log(error + " index error");
-    console.log(indexName);
-  });*/
+router.get('/getnearby', function(req, res, next){
   console.log(req.query);
   db.collection('clubs').find({'loc':{
     $nearSphere: {
@@ -92,7 +79,6 @@ router.get('/:id', function(req, res, next) {
           res.json(doc);      
       });
 });
-
 
 
 router.get('/:id', function(req, res, next) {
