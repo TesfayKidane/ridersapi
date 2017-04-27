@@ -25,6 +25,17 @@ router.post('/adduser', (req, res) => {
       res.send(result);
     }
   })
-})
+});
+
+router.get('/byId/:id', function (req, res, next) {
+    db.collection('users').findOne({"_id": ObjectId(req.params.id)}, function (err, doc) {
+        if (err) {
+            console.log('Error fetching data from mongodb');
+            res.send(err)
+        }
+        console.log(doc);
+        res.json(doc);
+    });
+});
 
 module.exports = router;

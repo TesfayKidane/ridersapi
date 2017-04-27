@@ -34,7 +34,7 @@ router.post('/addclub', (req, res) => {
           res.send(result.ops);
           }
         })
-})
+});
 
 router.get('/getnearby', function(req, res, next){
   console.log(req.query);
