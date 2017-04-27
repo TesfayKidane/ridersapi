@@ -36,6 +36,24 @@ router.post('/addclub', (req, res) => {
         })
 });
 
+router.get('/getnearby', function(req, res, next){
+  console.log(req.query);
+  db.collection('clubs').find({'loc':{
+    $nearSphere: {
+           $geometry: {
+              type : "Point",
+              coordinates : [parseFloat(req.query.lng), parseFloat(req.query.lat)]
+           },
+           $maxDistance: 10000
+        }
+  }}).toArray(function(e, r){
+    if(e)console.log(e);
+    console.log(r);
+    res.json(r);
+  });
+})
+
+
 router.get('/byId/:id', function(req, res, next) {
       console.log('Club request for : ' + req.params.id);
       db.collection('clubs').findOne({"_id":  ObjectId(req.params.id) },function(err, doc){
@@ -46,5 +64,6 @@ router.get('/byId/:id', function(req, res, next) {
           res.json(doc);      
       });
 });
+
 
 module.exports = router;
