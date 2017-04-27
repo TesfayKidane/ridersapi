@@ -11,6 +11,7 @@ var users = require('./routes/users');
 var currentUser = require('./routes/currentuser');
 var events = require('./routes/events');
 var clubs = require('./routes/clubs');
+var announce = require('./routes/announce');
 var jwt = require('express-jwt');
 var jwks = require('jwks-rsa');
 
@@ -51,6 +52,7 @@ app.use(lessMiddleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 
+
 app.all(cors());
 app.options('*', cors({'credentials':true, 'origin':true}));
 /*
@@ -64,6 +66,7 @@ app.use('/', index);
 app.use('/users', users);
 app.use('/events', events);
 app.use('/clubs', clubs);
+app.use('/announce', announce);
 clients = {};
 userObjects = {};
 app.set('users', {});

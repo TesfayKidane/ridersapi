@@ -21,35 +21,19 @@ router.get('/', function(req, res, next) {
           res.json(doc);      
       });
 });
-var NodeGeocoder = require('node-geocoder');
 
-var options = {
-  provider: 'google',
-  httpAdapter: 'https', // Default
-  apiKey: 'AIzaSyAQWOM1SESY4y3lMmhAUo-4LiFbNj_hqSM', // for Mapquest, OpenCage, Google Premier
-  formatter: null         // 'gpx', 'string', ...
-};
-
-var geocoder = NodeGeocoder(options);
-
-router.post('/addclub', (req, res, next) => {
-
-geocoder.geocode({address: req.body.clubPostCode}, function(err, ans) {
-  if(err) return next(err);
-  console.log(ans);
-  var lat=ans[0].latitude;
-  var lng=ans[0].longitude;
-  req.body.loc={type:'Point', coordinates:{lng:parseFloat(lng), lat:parseFloat(lat)}}
-  console.log(req.body);
-  db.collection('clubs').insert(req.body, (err, result) => {
-    if (err) {
-         console.log(err);
-         return next(err);
-    }
-    console.log('saved to database');
-    res.send(result);
-  })
-});
+router.post('/addclub', (req, res) => {
+        delete req.body["clubLat"];
+        delete req.body["clubLng"];
+        db.collection('clubs').save(req.body, (err, result) => {
+          if (err) {
+              console.log(err);
+              res.send(err);
+          }else{
+          console.log('saved to database');
+          res.send(result.ops);
+          }
+        })
 })
 
 router.get('/getnearby', function(req, res, next){
@@ -69,7 +53,8 @@ router.get('/getnearby', function(req, res, next){
   });
 })
 
-router.get('/:id', function(req, res, next) { 
+
+router.get('/byId/:id', function(req, res, next) {
       console.log('Club request for : ' + req.params.id);
       db.collection('clubs').findOne({"_id":  ObjectId(req.params.id) },function(err, doc){
           if(err) {
@@ -80,15 +65,5 @@ router.get('/:id', function(req, res, next) {
       });
 });
 
-
-router.get('/:id', function(req, res, next) {
-      db.collection('clubs').findOne({"_id":  ObjectId(req.params.id) },function(err, doc){
-          if(err) {
-              console.log('Error fetching data from mongodb');
-              res.send(err)
-            }
-          res.json(doc);      
-      });
-});
 
 module.exports = router;
