@@ -34,7 +34,7 @@ router.post('/addclub', (req, res) => {
           res.send(result.ops);
           }
         })
-})
+});
 
 router.get('/byId/:id', function(req, res, next) {
       console.log('Club request for : ' + req.params.id);
