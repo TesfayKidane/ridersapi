@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f6968252-fd5f-4b83-a9f8-e5380045ffc8" name="Default" comment="" />
+    <list default="true" id="f6968252-fd5f-4b83-a9f8-e5380045ffc8" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/ridersapi.iml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/watcherTasks.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/routes/announce.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app.js" afterPath="$PROJECT_DIR$/app.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/package.json" afterPath="$PROJECT_DIR$/package.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/routes/clubs.js" afterPath="$PROJECT_DIR$/routes/clubs.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/routes/events.js" afterPath="$PROJECT_DIR$/routes/events.js" />
+    </list>
     <list id="993cfa2a-3957-4404-9495-224ecb09c184" name="uncommitted" comment="" />
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -96,8 +107,8 @@
         <option value="$PROJECT_DIR$/routes/clubs.js" />
         <option value="$PROJECT_DIR$/routes/currentuser.js" />
         <option value="$PROJECT_DIR$/app.js" />
-        <option value="$PROJECT_DIR$/package.json" />
         <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/package.json" />
       </list>
     </option>
   </component>
@@ -270,7 +281,7 @@
       <workItem from="1493169807915" duration="5122000" />
       <workItem from="1493218370368" duration="3917000" />
       <workItem from="1493226121521" duration="20865000" />
-      <workItem from="1493257675614" duration="26000" />
+      <workItem from="1493257675614" duration="84000" />
     </task>
     <task id="LOCAL-00001" summary="sherali chat">
       <created>1493157797182</created>
@@ -311,7 +322,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="30474000" />
+    <option name="totallyTimeSpent" value="30532000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="55" y="-4" width="1311" height="772" extended-state="6" />
