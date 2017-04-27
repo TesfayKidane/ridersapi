@@ -23,28 +23,21 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/addclub', (req, res) => {
-  db.collection('clubs').save(req.body, (err, result) => {
-    if (err) {
-         console.log(err);
-         res.send(err);
-    }
-    console.log('saved to database');
-    res.send(result.ops);
-  })
+        delete req.body["clubLat"];
+        delete req.body["clubLng"];
+        db.collection('clubs').save(req.body, (err, result) => {
+          if (err) {
+              console.log(err);
+              res.send(err);
+          }else{
+          console.log('saved to database');
+          res.send(result.ops);
+          }
+        })
 })
 
-router.get('/:id', function(req, res, next) { 
+router.get('/byId/:id', function(req, res, next) {
       console.log('Club request for : ' + req.params.id);
-      db.collection('clubs').findOne({"_id":  ObjectId(req.params.id) },function(err, doc){
-          if(err) {
-              console.log('Error fetching data from mongodb');
-              res.send(err)
-            }
-          res.json(doc);      
-      });
-});
-
-router.get('/:id', function(req, res, next) {
       db.collection('clubs').findOne({"_id":  ObjectId(req.params.id) },function(err, doc){
           if(err) {
               console.log('Error fetching data from mongodb');
