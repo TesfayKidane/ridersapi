@@ -42,7 +42,7 @@ db.collection('events').save(req.body, (err, result) => {
     }
     var announceId = result.ops[0]._id.toString();
 db.collection("clubs").update(
-    {"_id":  ObjectId(clubId) },  {$push: {eventIds: {eventId:announceId} }}, (e, r) => {
+    {"_id":  ObjectId(clubId) },  {$push: {eventIds: announceId }}, (e, r) => {
     if(e){
         console.log(e);
         res.send(e);
@@ -62,9 +62,7 @@ router.get('/byClub/:id', function(req, res, next) {
         }
         var arr =[];
         for( var i in doc.eventIds ) {
-            if (doc.eventIds.hasOwnProperty(i)){
-                arr.push(ObjectId(doc.eventIds[i].eventId));
-            }
+            arr.push(ObjectId(doc.eventIds[i]));
         }
 
         db.collection('events').find({_id: {$in: arr}}).toArray(function(err, doc){
