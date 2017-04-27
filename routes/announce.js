@@ -21,7 +21,7 @@ router.post('/addannounce', (req, res) => {
     }
     var announceId = result.ops[0]._id.toString();
     db.collection("clubs").update(
-        {"_id":  ObjectId(clubId) },  {$push: {announcementIds: {announcementId:announceId} }}, (e, r) => {
+        {"_id":  ObjectId(clubId) },  {$addToSet: {announcementIds: announceId }}, (e, r) => {
             if(e){
                 console.log(e);
                 res.send(e);
@@ -40,10 +40,9 @@ router.get('/byClub/:id', function(req, res, next) {
               res.send(err)
             }
             var arr =[];
+            console.log(doc.announcementIds);
             for( var i in doc.announcementIds ) {
-                if (doc.announcementIds.hasOwnProperty(i)){
-                  arr.push(ObjectId(doc.announcementIds[i].announcementId));
-                }
+                arr.push(ObjectId(doc.announcementIds[i]));
             }
             
             db.collection('announcement').find({_id: {$in: arr}}).toArray(function(err, doc){

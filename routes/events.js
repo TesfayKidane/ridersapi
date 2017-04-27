@@ -33,24 +33,24 @@ router.get('/byId/:id', function (req, res, next) {
 
 router.post('/addevent', (req, res) => {
     console.log(req.body);
-    var clubId = req.body.clubId;
-    delete req.body["clubId"];
-    db.collection('events').save(req.body, (err, result) => {
-        if (err) {
-            console.log(err);
-            res.send(err);
-        }
-        var announceId = result.ops[0]._id.toString();
-        db.collection("clubs").update(
-            {"_id": ObjectId(clubId)}, {$push: {eventIds: {eventId: announceId}}}, (e, r) => {
-                if (e) {
-                    console.log(e);
-                    res.send(e);
-                }
-                console.log('saved to database');
-                res.send(result.ops);
-            })
-    })
+var clubId = req.body.clubId;
+delete req.body["clubId"];
+db.collection('events').save(req.body, (err, result) => {
+    if (err) {
+        console.log(err);
+        res.send(err);
+    }
+    var announceId = result.ops[0]._id.toString();
+db.collection("clubs").update(
+    {"_id":  ObjectId(clubId) },  {$push: {eventIds: announceId }}, (e, r) => {
+    if(e){
+        console.log(e);
+        res.send(e);
+    }
+    console.log('saved to database');
+res.send(result.ops);
+})
+})
 })
 
 router.get('/byClub/:id', function (req, res, next) {
@@ -60,11 +60,9 @@ router.get('/byClub/:id', function (req, res, next) {
             console.log('Error fetching data from mongodb');
             res.send(err)
         }
-        var arr = [];
-        for (var i in doc.eventIds) {
-            if (doc.eventIds.hasOwnProperty(i)) {
-                arr.push(ObjectId(doc.eventIds[i].eventId));
-            }
+        var arr =[];
+        for( var i in doc.eventIds ) {
+            arr.push(ObjectId(doc.eventIds[i]));
         }
 
         db.collection('events').find({_id: {$in: arr}}).toArray(function (err, doc) {
