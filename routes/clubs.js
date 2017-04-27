@@ -34,6 +34,23 @@ router.post('/addclub', (req, res) => {
           res.send(result.ops);
           }
         })
+});
+
+router.get('/getnearby', function(req, res, next){
+  console.log(req.query);
+  db.collection('clubs').find({'loc':{
+    $nearSphere: {
+           $geometry: {
+              type : "Point",
+              coordinates : [parseFloat(req.query.lng), parseFloat(req.query.lat)]
+           },
+           $maxDistance: 10000
+        }
+  }}).toArray(function(e, r){
+    if(e)console.log(e);
+    console.log(r);
+    res.json(r);
+  });
 })
 
 router.get('/byId/:id', function(req, res, next) {
@@ -44,11 +61,11 @@ router.get('/byId/:id', function(req, res, next) {
               console.log('Error fetching data from mongodb');
               res.send(err)
             }
-          // res.json(doc);  
+          // res.json(doc);
 
         //   test
         obj.myClub = doc;
-        
+
             var arr =[];
             console.log(doc.announcementIds);
             for( var i in doc.announcementIds ) {
@@ -60,23 +77,23 @@ router.get('/byId/:id', function(req, res, next) {
             for( var i in doc.userIds ) {
                 arrMembers.push(doc.userIds[i]);
             }
-            
+
             db.collection('announcement').find({_id: {$in: arr}}).toArray(function(err, docs){
                 if(err) {
                     res.send(err)
                   }
                   obj.myAnnounce = docs;
-                
+
                 //users
-                    
+
                     db.collection('users').find({_id: {$in: arrMembers}}).toArray(function(err, docm){
                         if(err) {
                             res.send(err)
                         }
                         obj.myMembers = docm;
-                        res.json(obj);                      
+                        res.json(obj);
                     });
-                //end users                    
+                //end users
             });
         // end test
 
