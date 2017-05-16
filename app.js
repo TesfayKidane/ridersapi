@@ -20,19 +20,19 @@ var Chat = require('./models/Chat.js');
 var Message = require('./models/Message.js');
 var app = express();
 var MongoClient = require('mongodb').MongoClient;
-var jwtCheck = jwt({
-    secret: jwks.expressJwtSecret({
-        cache: true,
-        rateLimit: true,
-        jwksRequestsPerMinute: 5,
-        jwksUri: "https://bikeriders.auth0.com/.well-known/jwks.json"
-    }),
-    audience: 'http://localhost:9000',
-    issuer: "https://bikeriders.auth0.com/",
-    algorithms: ['RS256']
-});
+// var jwtCheck = jwt({
+//     secret: jwks.expressJwtSecret({
+//         cache: true,
+//         rateLimit: true,
+//         jwksRequestsPerMinute: 5,
+//         jwksUri: "https://bikeriders.auth0.com/.well-known/jwks.json"
+//     }),
+//     audience: 'http://localhost:9000',
+//     issuer: "https://bikeriders.auth0.com/",
+//     algorithms: ['RS256']
+// });
 
-app.use(jwtCheck);
+// app.use(jwtCheck);
 
 var server = app.listen(9000, ()=>console.log("running on port 9000"));
 var io = require('socket.io').listen(server);
